@@ -191,7 +191,6 @@ Do not use `npx prisma db push` or `npx prisma generate` — they will fail.
 
 - **Real JWT authentication** — integrate `python-jose` with RS256 signing, token expiry, and refresh token flow.
 - **PostgreSQL in production** — SQLite is fine for local dev but a real deployment would use Postgres with connection pooling (PgBouncer or Prisma Accelerate).
-- **Seed script** — add a `prisma/seed.py` that populates realistic test data so reviewers can see the dashboard with actual numbers immediately.
 - **Upgrade prisma-client-py** — the Python client v0.15 is significantly behind the JS ecosystem. Evaluating alternatives (SQLAlchemy + Alembic, or waiting for official Prisma Python support in v7) would be a priority.
 - **Background cache warming** — instead of lazy cache population on first request, a background task (APScheduler or Celery) could pre-aggregate yesterday's data at midnight.
 - **Pagination on raw event queries** — `find_many` without a limit is fine for the current scale but would need cursor-based pagination for users with large event histories.
