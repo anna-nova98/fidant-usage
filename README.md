@@ -48,7 +48,15 @@ The default `DATABASE_URL` in `.env.example` points to `./prisma/dev.db` (SQLite
 python -m prisma db push
 ```
 
-4. Start the server:
+4. Seed the database with a demo user and sample events:
+
+```bash
+python prisma/seed.py
+```
+
+This creates a `starter` plan user with `id=1`, matching the `AUTH_TOKEN="1"` hardcoded in the frontend.
+
+5. Start the server:
 
 ```bash
 python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
