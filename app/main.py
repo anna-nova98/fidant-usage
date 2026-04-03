@@ -1,12 +1,28 @@
-# app/main.py
-from fastapi import FastAPI
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from prisma import Prisma
-from typing import Optional
-from datetime import date
+from fastapi.responses import JSONResponse
+from app.db.prisma_client import connect_db, disconnect_db
+from app.api.usage import router as usage_router
 
-app = FastAPI()
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Manage the application lifecycle.
+    Connects to the database on startup and disconnects on shutdown.
+    Using the lifespan context manager is the recommended approach in FastAPI
+    (replaces the deprecated @app.on_event("startup/shutdown") pattern).
+    """
+    await connect_db()
+    yield
+    await disconnect_db()
+
+
+app = FastAPI(title="Fidant Usage API", lifespan=lifespan)
+
+# Allow the React dev server to call the API during local development.
+# Restrict origins to your actual domain in production.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
@@ -14,54 +30,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-db = Prisma()
-
-@app.on_event("startup")
-async def startup():
-    await db.connect()
-
-@app.on_event("shutdown")
-async def shutdown():
-    await db.disconnect()
+app.include_router(usage_router)
 
 
-@app.get("/usage")
-async def get_usage():
-    total = await db.request.count()
-    requests = await db.request.find_many(order={"createdAt": "desc"}, take=10)
-    return {"total_requests": total, "recent_requests": requests}
-
-@app.get("/requests")
-async def get_requests():
-    return await db.request.find_many()
-
-@app.post("/requests")
-async def create_request(name: str, note: Optional[str] = None):
-    return await db.request.create(data={
-        "title": name,
-        "content": note or "",
-        "user_id": 0,
-    })
-
-
-@app.get("/stats")
-async def get_stats():
-    today = date.today()
-
- 
-    cache = await db.daily_usage_cache.find_unique(where={"date": today})
-    
-    if cache:
-      
-        return {"date": today, "total_usage": cache.total_usage, "cached": True}
-
-    
-    total_usage = await db.request.count() 
-
-    await db.daily_usage_cache.create({
-        "date": today,
-        "total_usage": total_usage
-    })
-
-    return {"date": today, "total_usage": total_usage, "cached": False}
+@app.exception_handler(404)
+async def not_found_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Return a consistent JSON error body for unmatched routes."""
+    return JSONResponse(
+        status_code=404,
+        content={"error": "not_found", "message": "Route not found"},
+    )

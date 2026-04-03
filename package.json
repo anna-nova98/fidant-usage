@@ -3,6 +3,7 @@
     "prisma": "^7.6.0"
   },
   "dependencies": {
-    "@prisma/client": "^7.6.0"
+    "@prisma/client": "^7.6.0",
+    "dotenv": "^17.4.0"
   }
 }
