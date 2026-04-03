@@ -80,6 +80,33 @@ Frontend runs at `http://localhost:3000`.
 
 ---
 
+## Running the Full Stack
+
+Once both backend and frontend are running, open `http://localhost:3000` in your browser. The dashboard will load automatically using `Bearer 1` as the demo token.
+
+To test the API directly:
+
+```bash
+# Get 7-day stats for user id=1
+curl http://localhost:8000/api/usage/stats?days=7 \
+  -H "Authorization: Bearer 1"
+
+# Get 30-day stats
+curl "http://localhost:8000/api/usage/stats?days=30" \
+  -H "Authorization: Bearer 1"
+
+# Trigger a 400 (invalid days param)
+curl "http://localhost:8000/api/usage/stats?days=0" \
+  -H "Authorization: Bearer 1"
+
+# Trigger a 401 (missing auth)
+curl http://localhost:8000/api/usage/stats
+```
+
+Or use the interactive Swagger UI at `http://localhost:8000/docs`.
+
+---
+
 ## API Reference
 
 ### `GET /api/usage/stats?days=7`
