@@ -1,12 +1,32 @@
 # Python
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
 env/
 venv/
-*.sqlite3
+ENV/
+.venv/
 
-# Node / Prisma
-node_modules/
+# Environment
+.env
+.env.local
+
+# Prisma
+prisma/dev.db
+prisma/*.db-journal
 .prisma/client/
+
+# Node
+node_modules/
+package-lock.json
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

@@ -15,3 +15,12 @@ model Request {
   user_id   Int
   createdAt DateTime @default(now())
 }
+
+
+model daily_usage_cache {
+  id          Int      @id @default(autoincrement())
+  date        DateTime @unique
+  total_usage Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
