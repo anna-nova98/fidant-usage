@@ -1,11 +1,10 @@
-# prisma_client.py
 from prisma import Prisma
 
 
-db = Prisma()
+db = Prisma(adapter="sqlite")
 
-async def connect():
+async def connect_db():
     await db.connect()
 
-async def disconnect():
+async def disconnect_db():
     await db.disconnect()

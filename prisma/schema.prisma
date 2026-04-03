@@ -1,22 +1,17 @@
+generator client {
+  provider  = "prisma-client-py"
+  interface = "asyncio"
+}
+
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
-}
-
-generator client {
-  provider = "prisma-client-py"
-}
-
-model User {
-  id        Int     @id @default(autoincrement())
-  name      String?
-  plan_tier String  @default("starter")  
+  url      = env("DATABASE_URL")
 }
 
 model Request {
-  id         Int    @id @default(autoincrement())
-  user_id    Int
-  date_key   String   
-  request_id String   
-  status     String   
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  user_id   Int
+  createdAt DateTime @default(now())
 }

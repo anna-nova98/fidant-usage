@@ -1,8 +1,42 @@
 # app/main.py
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from prisma import Prisma
+from typing import Optional
 
 app = FastAPI()
 
-@app.get("/health")
-async def health():
-    return {"status": "ok"}
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+db = Prisma()
+
+
+@app.on_event("startup")
+async def startup():
+    await db.connect()
+
+@app.on_event("shutdown")
+async def shutdown():
+    await db.disconnect()
+
+@app.get("/usage")
+async def get_usage():
+    total = await db.request.count()
+    requests = await db.request.find_many(order={"createdAt": "desc"}, take=10)
+    return {"total_requests": total, "recent_requests": requests}
+
+@app.get("/requests")
+async def get_requests():
+    return await db.request.find_many()
+
+@app.post("/requests")
+async def create_request(name: str, note: Optional[str] = None):
+    return await db.request.create(data={
+        "title": name,
+        "content": note or "",
+        "user_id": 0,
+    })
