@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import {
   BarChart,
@@ -8,7 +8,6 @@ import {
   Tooltip,
   ReferenceLine,
   ResponsiveContainer,
-  Cell,
 } from "recharts";
 
 // Base URL for the backend API
@@ -106,15 +105,13 @@ const UsageStats = () => {
               strokeDasharray="4 2"
               label={{ value: "limit", fontSize: 11 }}
             />
-            <Bar dataKey="committed" name="Committed" radius={[4, 4, 0, 0]}>
-              {data.days.map((d) => (
-                // Use date as the key — it is unique within the period
-                <Cell
-                  key={d.date}
-                  fill={d.utilization >= 1 ? "#ef4444" : "#6366f1"}
-                />
-              ))}
-            </Bar>
+            <Bar
+              dataKey="committed"
+              name="Committed"
+              radius={[4, 4, 0, 0]}
+              // Bars exceeding the daily limit are shown in red, others in indigo
+              fill="#6366f1"
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>
